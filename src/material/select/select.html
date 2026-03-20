@@ -7,15 +7,15 @@
 >
   <div class="mat-mdc-select-value" [attr.id]="_valueId">
     @if (empty) {
-      <span class="mat-mdc-select-placeholder mat-mdc-select-min-line">{{placeholder}}</span>
+    <span class="mat-mdc-select-placeholder mat-mdc-select-min-line">{{placeholder}}</span>
     } @else {
-      <span class="mat-mdc-select-value-text">
-        @if (customTrigger) {
-          <ng-content select="mat-select-trigger"></ng-content>
-        } @else {
-          <span class="mat-mdc-select-min-line">{{triggerValue}}</span>
-        }
-      </span>
+    <span class="mat-mdc-select-value-text">
+      @if (customTrigger) {
+      <ng-content select="mat-select-trigger"></ng-content>
+      } @else {
+      <span class="mat-mdc-select-min-line">{{triggerValue}}</span>
+      }
+    </span>
     }
   </div>
 
@@ -47,8 +47,6 @@
   <!-- `mat-undefined` is weird, but we were using it internally -->
   <div
     #panel
-    role="listbox"
-    tabindex="-1"
     class="mat-mdc-select-panel mdc-menu-surface mdc-menu-surface--open"
     [class]="panelClass"
     [class.mat-select-panel-animations-enabled]="!_animationsDisabled"
@@ -57,10 +55,16 @@
     [class.mat-warn]="_parentFormField?.color === 'warn'"
     [class.mat-undefined]="!_parentFormField?.color"
     [attr.id]="id + '-panel'"
-    [attr.aria-multiselectable]="multiple"
     [attr.aria-label]="ariaLabel || null"
     [attr.aria-labelledby]="_getPanelAriaLabelledby()"
-    (keydown)="_handleKeydown($event)">
-    <ng-content></ng-content>
+    (mousedown)="panelClick()"
+    (keydown)="_handleKeydown($event)"
+  >
+    <div class="content" role="listbox" [attr.aria-multiselectable]="multiple">
+      <ng-content></ng-content>
+    </div>
+    <div class="footer">
+      <ng-content select="mat-select-buttons"></ng-content>
+    </div>
   </div>
 </ng-template>
