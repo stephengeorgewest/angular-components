@@ -5017,6 +5017,7 @@ export function getHorizontalFixtures(listOrientation: Exclude<DropListOrientati
     styles: HORIZONTAL_FIXTURE_STYLES,
     template: HORIZONTAL_FIXTURE_TEMPLATE,
     imports: [CdkDropList, CdkDrag],
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class DraggableInHorizontalDropZone implements AfterViewInit {
     readonly _elementRef = inject(ElementRef);
@@ -5033,10 +5034,6 @@ export function getHorizontalFixtures(listOrientation: Exclude<DropListOrientati
     droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
       moveItemInArray(this.items, event.previousIndex, event.currentIndex);
     });
-
-    constructor(...args: unknown[]);
-
-    constructor() {}
 
     ngAfterViewInit() {
       // Firefox preserves the `scrollLeft` value from previous similar containers. This
@@ -5063,6 +5060,7 @@ export function getHorizontalFixtures(listOrientation: Exclude<DropListOrientati
         }
       `,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class DraggableInScrollableHorizontalDropZone extends DraggableInHorizontalDropZone {
     constructor() {
@@ -5102,6 +5100,7 @@ export function getHorizontalFixtures(listOrientation: Exclude<DropListOrientati
       </div>
     `,
     imports: [CdkDropList, CdkDrag, CdkDragPreview],
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class DraggableInHorizontalFlexDropZoneWithMatchSizePreview {
     @ViewChildren(CdkDrag) dragItems!: QueryList<CdkDrag>;
@@ -5147,6 +5146,7 @@ const DROP_ZONE_FIXTURE_TEMPLATE = `
 @Component({
   template: DROP_ZONE_FIXTURE_TEMPLATE,
   imports: [CdkDropList, CdkDrag, NgFor],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class DraggableInDropZone implements AfterViewInit {
   protected _elementRef = inject(ElementRef);
@@ -5197,6 +5197,7 @@ class DraggableInOnPushDropZone extends DraggableInDropZone {}
     </div>
   `,
   imports: [CdkDropListGroup, DraggableInOnPushDropZone],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ConnectedDropListsInOnPush {}
 
@@ -5213,6 +5214,7 @@ class ConnectedDropListsInOnPush {}
     }
   `,
   imports: [CdkDropList, CdkDrag, NgFor],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class DraggableInScrollableVerticalDropZone extends DraggableInDropZone {
   constructor() {
@@ -5241,6 +5243,7 @@ export class DraggableInScrollableVerticalDropZone extends DraggableInDropZone {
     }
   `,
   imports: [CdkDropList, CdkDrag, NgFor, CdkScrollable],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableInScrollableParentContainer extends DraggableInDropZone implements AfterViewInit {
   @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLElement>;
@@ -5288,6 +5291,7 @@ class DraggableInScrollableParentContainer extends DraggableInDropZone implement
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableInDropZoneWithContainer extends DraggableInDropZone {}
 
@@ -5318,6 +5322,7 @@ class DraggableInDropZoneWithContainer extends DraggableInDropZone {}
     </div>
   `,
   imports: [CdkDropList, CdkDrag, CdkDragPreview, NgIf],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableInDropZoneWithCustomPreview {
   @ViewChild(CdkDropList) dropInstance!: CdkDropList;
@@ -5352,6 +5357,7 @@ class DraggableInDropZoneWithCustomPreview {
     </div>
   `,
   imports: [CdkDropList, CdkDrag, CdkDragPreview],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableInDropZoneWithCustomTextOnlyPreview {
   @ViewChild(CdkDropList) dropInstance!: CdkDropList;
@@ -5374,6 +5380,7 @@ class DraggableInDropZoneWithCustomTextOnlyPreview {
     </div>
   `,
   imports: [CdkDropList, CdkDrag, CdkDragPreview],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableInDropZoneWithCustomMultiNodePreview {
   @ViewChild(CdkDropList) dropInstance!: CdkDropList;
@@ -5406,6 +5413,7 @@ class DraggableInDropZoneWithCustomMultiNodePreview {
     }
   `,
   imports: [CdkDropList, CdkDrag, CdkDragPlaceholder],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableInDropZoneWithCustomPlaceholder {
   @ViewChildren(CdkDrag) dragItems!: QueryList<CdkDrag>;
@@ -5427,6 +5435,7 @@ class DraggableInDropZoneWithCustomPlaceholder {
     </div>
   `,
   imports: [CdkDropList, CdkDrag, CdkDragPlaceholder],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableInDropZoneWithCustomTextOnlyPlaceholder {
   @ViewChildren(CdkDrag) dragItems!: QueryList<CdkDrag>;
@@ -5448,6 +5457,7 @@ class DraggableInDropZoneWithCustomTextOnlyPlaceholder {
     </div>
   `,
   imports: [CdkDropList, CdkDrag, CdkDragPlaceholder],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableInDropZoneWithCustomMultiNodePlaceholder {
   @ViewChildren(CdkDrag) dragItems!: QueryList<CdkDrag>;
@@ -5526,6 +5536,7 @@ const CONNECTED_DROP_ZONES_TEMPLATE = `
   styles: CONNECTED_DROP_ZONES_STYLES,
   template: CONNECTED_DROP_ZONES_TEMPLATE,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class ConnectedDropZones implements AfterViewInit {
   @ViewChildren(CdkDrag) rawDragItems!: QueryList<CdkDrag>;
@@ -5561,6 +5572,7 @@ export class ConnectedDropZones implements AfterViewInit {
   styles: CONNECTED_DROP_ZONES_STYLES,
   template: `@if (true) {${CONNECTED_DROP_ZONES_TEMPLATE}}`,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ConnectedDropZonesInsideShadowRootWithNgIf extends ConnectedDropZones {}
 
@@ -5602,6 +5614,7 @@ class ConnectedDropZonesInsideShadowRootWithNgIf extends ConnectedDropZones {}
     </div>
   `,
   imports: [CdkDropList, CdkDrag, CdkDropListGroup],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ConnectedDropZonesViaGroupDirective extends ConnectedDropZones {
   groupDisabled = false;
@@ -5641,6 +5654,7 @@ class ConnectedDropZonesViaGroupDirective extends ConnectedDropZones {
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ConnectedDropZonesWithSingleItems {
   @ViewChildren(CdkDrag) dragItems!: QueryList<CdkDrag>;
@@ -5661,6 +5675,7 @@ class ConnectedDropZonesWithSingleItems {
     </div>
   `,
   imports: [CdkDropList, CdkDropListGroup],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedDropListGroups {
   @ViewChild('group') group!: CdkDropListGroup<CdkDropList>;
@@ -5673,6 +5688,7 @@ class NestedDropListGroups {
     <ng-container cdkDropList></ng-container>
   `,
   imports: [CdkDropList],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DropListOnNgContainer {}
 
@@ -5741,6 +5757,7 @@ class WrappedDropContainerComponent {
     </div>
   `,
   imports: [CdkDropListGroup, WrappedDropContainerComponent],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ConnectedWrappedDropZones {
   todo = ['Zero', 'One', 'Two', 'Three'];
@@ -5771,6 +5788,7 @@ class ConnectedWrappedDropZones {
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableWithCanvasInDropZone extends DraggableInDropZone implements AfterViewInit {
   override ngAfterViewInit() {
@@ -5812,6 +5830,7 @@ class DraggableWithCanvasInDropZone extends DraggableInDropZone implements After
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableWithInvalidCanvasInDropZone extends DraggableInDropZone {}
 
@@ -5851,6 +5870,7 @@ class DraggableWithInvalidCanvasInDropZone extends DraggableInDropZone {}
       </div>
     </div>`,
   imports: [CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedDragsComponent {
   @ViewChild('container') container!: ElementRef;
@@ -5905,6 +5925,7 @@ class NestedDragsComponent {
     </ng-template>
   `,
   imports: [CdkDrag, NgTemplateOutlet],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedDragsThroughTemplate {
   @ViewChild('container') container!: ElementRef;
@@ -5930,6 +5951,7 @@ class NestedDragsThroughTemplate {
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedDropZones {
   @ViewChildren(CdkDrag) dragItems!: QueryList<CdkDrag>;
@@ -5941,6 +5963,7 @@ class NestedDropZones {
 @Component({
   template: `<div cdkDropList></div>`,
   imports: [CdkDropList],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class PlainStandaloneDropList {
   @ViewChild(CdkDropList) dropList!: CdkDropList;
@@ -5983,6 +6006,7 @@ class PlainStandaloneDropList {
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ConnectedDropZonesWithIntermediateSibling extends ConnectedDropZones {}
 
@@ -6015,6 +6039,7 @@ class ConnectedDropZonesWithIntermediateSibling extends ConnectedDropZones {}
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableWithInputsInDropZone extends DraggableInDropZone {
   inputValue = 'hello';
@@ -6037,6 +6062,7 @@ class DraggableWithInputsInDropZone extends DraggableInDropZone {
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableWithRadioInputsInDropZone {
   @ViewChildren(CdkDrag) dragItems!: QueryList<CdkDrag>;
@@ -6088,6 +6114,7 @@ class DraggableWithRadioInputsInDropZone {
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ConnectedDropZonesWithAlternateContainer extends ConnectedDropZones {
   override done: string[] = [];
@@ -6110,6 +6137,7 @@ class ConnectedDropZonesWithAlternateContainer extends ConnectedDropZones {
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableWithInvalidAlternateContainer {
   @ViewChildren(CdkDrag) dragItems!: QueryList<CdkDrag>;
@@ -6132,6 +6160,7 @@ class DraggableWithInvalidAlternateContainer {
     </div>
   `,
   imports: [CdkDropList, CdkDrag],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DraggableWithMissingAlternateContainer {
   @ViewChildren(CdkDrag) dragItems!: QueryList<CdkDrag>;

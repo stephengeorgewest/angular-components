@@ -15,7 +15,7 @@ import {
   TAB,
   UP_ARROW,
 } from '@angular/cdk/keycodes';
-import {OverlayModule, createCloseScrollStrategy} from '@angular/cdk/overlay';
+import {createCloseScrollStrategy} from '@angular/cdk/overlay';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   createKeyboardEvent,
@@ -30,7 +30,6 @@ import {
   ChangeDetectorRef,
   Component,
   DebugElement,
-  ElementRef,
   Injector,
   OnInit,
   QueryList,
@@ -1094,27 +1093,6 @@ describe('MatSelect', () => {
           const panel = document.querySelector('.mat-mdc-select-panel')!;
           expect(panel.getAttribute('aria-label')).toBe('My label');
           expect(panel.hasAttribute('aria-labelledby')).toBe(false);
-        });
-      });
-
-      describe('for select inside a modal', () => {
-        let fixture: ComponentFixture<SelectInsideAModal>;
-
-        beforeEach(() => {
-          fixture = TestBed.createComponent(SelectInsideAModal);
-          fixture.detectChanges();
-        });
-
-        it('should add the id of the select panel to the aria-owns of the modal', () => {
-          fixture.componentInstance.select.open();
-          fixture.detectChanges();
-
-          const panelId = `${fixture.componentInstance.select.id}-panel`;
-          const modalElement = fixture.componentInstance.modal.nativeElement;
-
-          expect(modalElement.getAttribute('aria-owns')?.split(' '))
-            .withContext('expecting modal to own the select panel')
-            .toContain(panelId);
         });
       });
 
@@ -4506,6 +4484,7 @@ describe('MatSelect', () => {
     <div [style.height.px]="heightBelow"></div>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class BasicSelect {
   foods: any[] = [
@@ -4549,6 +4528,7 @@ class BasicSelect {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelSelect {
   foods: any[] = [
@@ -4578,6 +4558,7 @@ class NgModelSelect {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ManySelects {}
 
@@ -4596,6 +4577,7 @@ class ManySelects {}
     }
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgIfSelect {
   isShowing = false;
@@ -4620,6 +4602,7 @@ class NgIfSelect {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectWithChangeEvent {
   foods: string[] = [
@@ -4647,6 +4630,7 @@ class SelectWithChangeEvent {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectInitWithoutOptions {
   foods!: any[];
@@ -4675,6 +4659,7 @@ class SelectInitWithoutOptions {
     },
   ],
   imports: [MatSelect, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class CustomSelectAccessor implements ControlValueAccessor {
   @ViewChild(MatSelect) select!: MatSelect;
@@ -4694,6 +4679,7 @@ class CustomSelectAccessor implements ControlValueAccessor {
     },
   ],
   imports: [CustomSelectAccessor, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class CompWithCustomSelect {
   ctrl = new FormControl('initial value');
@@ -4703,6 +4689,7 @@ class CompWithCustomSelect {
 @Component({
   template: '',
   selector: 'throws-error-on-init',
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ThrowsErrorOnInit implements OnInit {
   ngOnInit() {
@@ -4718,6 +4705,7 @@ class ThrowsErrorOnInit implements OnInit {
     <throws-error-on-init></throws-error-on-init>
   `,
   imports: [ThrowsErrorOnInit, MatSelect, MatFormFieldModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectWithErrorSibling {
   value!: string;
@@ -4780,6 +4768,7 @@ class BasicSelectOnPushPreselected {
     </mat-form-field>
     `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FloatLabelSelect {
   floatLabel: FloatLabelType = 'auto';
@@ -4806,6 +4795,7 @@ class FloatLabelSelect {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MultiSelect {
   foods: any[] = [
@@ -4828,6 +4818,7 @@ class MultiSelect {
 @Component({
   template: `<mat-form-field><mat-select tabindex="5"></mat-select></mat-form-field>`,
   imports: [MatSelect, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectWithPlainTabindex {}
 
@@ -4841,6 +4832,7 @@ class SelectWithPlainTabindex {}
     }
   `,
   imports: [MatSelect, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectEarlyAccessSibling {}
 
@@ -4853,6 +4845,7 @@ class SelectEarlyAccessSibling {}
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class BasicSelectInitiallyHidden {
   isVisible = false;
@@ -4867,6 +4860,7 @@ class BasicSelectInitiallyHidden {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class BasicSelectNoPlaceholder {}
 
@@ -4880,6 +4874,7 @@ class BasicSelectNoPlaceholder {}
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class BasicSelectWithTheming {
   @ViewChild(MatSelect) select!: MatSelect;
@@ -4899,6 +4894,7 @@ class BasicSelectWithTheming {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ResetValuesSelect {
   foods: any[] = [
@@ -4926,6 +4922,7 @@ class ResetValuesSelect {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FalsyValueSelect {
   foods: any[] = [
@@ -4952,6 +4949,7 @@ class FalsyValueSelect {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatOptgroup, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectWithGroups {
   control = new FormControl('');
@@ -5009,6 +5007,7 @@ class SelectWithGroups {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatOptgroup, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectWithGroupsAndNgContainer {
   control = new FormControl('');
@@ -5029,6 +5028,7 @@ class SelectWithGroupsAndNgContainer {
     </form>
   `,
   imports: [MatSelect, MatFormFieldModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class InvalidSelectInForm {
   value: any;
@@ -5050,6 +5050,7 @@ class InvalidSelectInForm {
     </form>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectInsideFormGroup {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
@@ -5075,6 +5076,7 @@ class SelectInsideFormGroup {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class BasicSelectWithoutForms {
   selectedFood: string | null = null;
@@ -5098,6 +5100,7 @@ class BasicSelectWithoutForms {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class BasicSelectWithoutFormsPreselected {
   selectedFood = 'pizza-1';
@@ -5120,6 +5123,7 @@ class BasicSelectWithoutFormsPreselected {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class BasicSelectWithoutFormsMultiple {
   selectedFoods!: string[];
@@ -5146,6 +5150,7 @@ class BasicSelectWithoutFormsMultiple {
     </mat-form-field>
   `,
   imports: [MatSelect, MatSelectTrigger, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectWithCustomTrigger {
   foods: any[] = [
@@ -5171,6 +5176,7 @@ class SelectWithCustomTrigger {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelCompareWithSelect {
   foods: {value: string; viewValue: string}[] = [
@@ -5218,6 +5224,7 @@ class NgModelCompareWithSelect {
     </mat-select>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class CustomErrorBehaviorSelect {
   @ViewChild(MatSelect) select!: MatSelect;
@@ -5240,6 +5247,7 @@ class CustomErrorBehaviorSelect {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SingleSelectWithPreselectedArrayValues {
   foods: any[] = [
@@ -5265,6 +5273,7 @@ class SingleSelectWithPreselectedArrayValues {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectWithoutOptionCentering {
   foods: any[] = [
@@ -5295,6 +5304,7 @@ class SelectWithoutOptionCentering {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectWithNgIfAndLabel {
   showSelect = true;
@@ -5311,6 +5321,7 @@ class SelectWithNgIfAndLabel {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MultiSelectWithLotsOfOptions {
   items = new Array(100).fill(0).map((_, i) => i);
@@ -5337,6 +5348,7 @@ class MultiSelectWithLotsOfOptions {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectWithResetOptionAndFormControl {
   @ViewChild(MatSelect) select!: MatSelect;
@@ -5357,6 +5369,7 @@ class SelectWithResetOptionAndFormControl {
     </mat-form-field>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectInNgContainer {}
 
@@ -5371,6 +5384,7 @@ class SelectInNgContainer {}
     </form>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SelectInsideDynamicFormGroup {
   private _formBuilder = inject(FormBuilder);
@@ -5416,6 +5430,7 @@ class SelectInsideDynamicFormGroup {
     <div [style.height.px]="heightBelow"></div>
   `,
   imports: [MatSelect, MatOption, MatFormFieldModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class BasicSelectWithFirstAndLastOptionDisabled {
   foods: any[] = [
@@ -5444,35 +5459,4 @@ class BasicSelectWithFirstAndLastOptionDisabled {
 
   @ViewChild(MatSelect, {static: true}) select!: MatSelect;
   @ViewChildren(MatOption) options!: QueryList<MatOption>;
-}
-
-@Component({
-  template: `
-    <button cdkOverlayOrigin #trigger="cdkOverlayOrigin">open dialog</button>
-    <ng-template cdkConnectedOverlay [cdkConnectedOverlayOpen]="true"
-      [cdkConnectedOverlayOrigin]="trigger">
-      <div role="dialog" [attr.aria-modal]="'true'" #modal>
-        <mat-form-field>
-          <mat-label>Select a food</mat-label>
-          <mat-select placeholder="Food" ngModel>
-            @for (food of foods; track food) {
-              <mat-option [value]="food.value">{{ food.viewValue }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </ng-template>
-  `,
-  imports: [MatSelect, MatOption, MatFormFieldModule, FormsModule, OverlayModule],
-})
-class SelectInsideAModal {
-  foods = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'},
-  ];
-
-  @ViewChild(MatSelect) select!: MatSelect;
-  @ViewChildren(MatOption) options!: QueryList<MatOption>;
-  @ViewChild('modal') modal!: ElementRef;
 }

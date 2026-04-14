@@ -1,13 +1,19 @@
 # List of all entry-points of the Angular Aria package.
 ARIA_ENTRYPOINTS = [
     "accordion",
+    "accordion/testing",
     "combobox",
     "grid",
     "listbox",
+    "listbox/testing",
     "menu",
+    "menu/testing",
     "tabs",
+    "tabs/testing",
     "toolbar",
+    "toolbar/testing",
     "tree",
+    "tree/testing",
     "private",
 ]
 

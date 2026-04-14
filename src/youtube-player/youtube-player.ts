@@ -38,12 +38,9 @@ import {Observable, of as observableOf, Subject, BehaviorSubject, fromEventPatte
 import {takeUntil, switchMap} from 'rxjs/operators';
 import {PlaceholderImageQuality, YouTubePlayerPlaceholder} from './youtube-player-placeholder';
 
-declare global {
-  interface Window {
-    YT: typeof YT | undefined;
-    onYouTubeIframeAPIReady: (() => void) | undefined;
-  }
-}
+type YoutubeWindow = {
+  onYouTubeIframeAPIReady?: (() => void) | undefined;
+};
 
 /** Injection token used to configure the `YouTubePlayer`. */
 export const YOUTUBE_PLAYER_CONFIG = new InjectionToken<YouTubePlayerConfig>(
@@ -253,8 +250,6 @@ export class YouTubePlayer implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('youtubeContainer', {static: true})
   youtubeContainer!: ElementRef<HTMLElement>;
 
-  constructor(...args: unknown[]);
-
   constructor() {
     const platformId = inject<Object>(PLATFORM_ID);
     const config = inject(YOUTUBE_PLAYER_CONFIG, {optional: true});
@@ -292,7 +287,7 @@ export class YouTubePlayer implements AfterViewInit, OnChanges, OnDestroy {
 
     if (this._player) {
       this._player.destroy();
-      window.onYouTubeIframeAPIReady = this._existingApiReadyCallback;
+      (window as YoutubeWindow).onYouTubeIframeAPIReady = this._existingApiReadyCallback;
     }
 
     this._playerChanges.complete();
@@ -513,9 +508,9 @@ export class YouTubePlayer implements AfterViewInit, OnChanges, OnDestroy {
         );
       }
 
-      this._existingApiReadyCallback = window.onYouTubeIframeAPIReady;
+      this._existingApiReadyCallback = (window as YoutubeWindow).onYouTubeIframeAPIReady;
 
-      window.onYouTubeIframeAPIReady = () => {
+      (window as YoutubeWindow).onYouTubeIframeAPIReady = () => {
         this._existingApiReadyCallback?.();
         this._ngZone.run(() => this._createPlayer(playVideo));
       };

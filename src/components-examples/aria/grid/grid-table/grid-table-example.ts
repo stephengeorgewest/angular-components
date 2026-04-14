@@ -59,8 +59,6 @@ export class GridTableExample {
 
   readonly tasks: WritableSignal<TaskRow[]> = signal(this._createRows());
 
-  constructor() {}
-
   startEdit(
     event: KeyboardEvent | FocusEvent | undefined,
     task: TaskRow,
@@ -95,16 +93,6 @@ export class GridTableExample {
 
   updateSelection(checked: boolean): void {
     this.tasks().forEach(t => t.selected.set(checked));
-  }
-
-  addTag(event: KeyboardEvent | FocusEvent | undefined, task: TaskRow, inputEl: HTMLInputElement) {
-    if (event instanceof KeyboardEvent && event.key === 'Enter') {
-      const value = inputEl.value;
-      if (value.length > 0) {
-        task.tags.set([...task.tags(), value]);
-      }
-    }
-    inputEl.value = '';
   }
 
   private _createRows(): TaskRow[] {

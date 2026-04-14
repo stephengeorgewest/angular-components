@@ -16,7 +16,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
-import {CdkScrollable, ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
+import {CdkScrollable, ViewportRuler} from '@angular/cdk/scrolling';
 
 import {
   AfterContentInit,
@@ -78,7 +78,7 @@ export const MAT_DRAWER_DEFAULT_AUTOSIZE = new InjectionToken<boolean>(
  * Used to provide a drawer container to a drawer while avoiding circular references.
  * @docs-private
  */
-export const MAT_DRAWER_CONTAINER = new InjectionToken('MAT_DRAWER_CONTAINER');
+export const MAT_DRAWER_CONTAINER = new InjectionToken<MatDrawerContainer>('MAT_DRAWER_CONTAINER');
 
 @Component({
   selector: 'mat-drawer-content',
@@ -102,16 +102,6 @@ export class MatDrawerContent extends CdkScrollable implements AfterContentInit 
   private _platform = inject(Platform);
   private _changeDetectorRef = inject(ChangeDetectorRef);
   _container = inject(MatDrawerContainer);
-
-  constructor(...args: unknown[]);
-
-  constructor() {
-    const elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    const scrollDispatcher = inject(ScrollDispatcher);
-    const ngZone = inject(NgZone);
-
-    super(elementRef, scrollDispatcher, ngZone);
-  }
 
   ngAfterContentInit() {
     this._container._contentMarginChanges.subscribe(() => {
@@ -333,8 +323,6 @@ export class MatDrawer implements AfterViewInit, OnDestroy {
   private _injector = inject(Injector);
   private _changeDetectorRef = inject(ChangeDetectorRef);
 
-  constructor(...args: unknown[]);
-
   constructor() {
     this.openedChange.pipe(takeUntil(this._destroyed)).subscribe((opened: boolean) => {
       if (opened) {
@@ -364,7 +352,6 @@ export class MatDrawer implements AfterViewInit, OnDestroy {
             });
           }
         }),
-        renderer.listen(element, 'transitionrun', this._handleTransitionEvent),
         renderer.listen(element, 'transitionend', this._handleTransitionEvent),
         renderer.listen(element, 'transitioncancel', this._handleTransitionEvent),
       ];
@@ -572,6 +559,11 @@ export class MatDrawer implements AfterViewInit, OnDestroy {
       // Note: it's important to set this as early as possible,
       // otherwise the animation can look glitchy in some cases.
       this._setIsAnimating(true);
+
+      // Previously we dispatched this in a `transitionrun` event, but it might not fire
+      // if the element is hidden (see #32992). Since this event is load-bearing for the
+      // margin calculations, we need it to fire consistently.
+      setTimeout(() => this._animationStarted.next());
     } else {
       // Simulate the animation events if animations are disabled.
       setTimeout(() => {
@@ -646,17 +638,13 @@ export class MatDrawer implements AfterViewInit, OnDestroy {
 
     if (event.target === element) {
       this._ngZone.run(() => {
-        if (event.type === 'transitionrun') {
-          this._animationStarted.next(event);
-        } else {
-          // Don't toggle the animating state on `transitioncancel` since another animation should
-          // start afterwards. This prevents the drawer from blinking if an animation is interrupted.
-          if (event.type === 'transitionend') {
-            this._setIsAnimating(false);
-          }
-
-          this._animationEnd.next(event);
+        // Don't toggle the animating state on `transitioncancel` since another animation should
+        // start afterwards. This prevents the drawer from blinking if an animation is interrupted.
+        if (event.type === 'transitionend') {
+          this._setIsAnimating(false);
         }
+
+        this._animationEnd.next(event);
       });
     }
   };
@@ -787,8 +775,6 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
   }
 
   private _injector = inject(Injector);
-
-  constructor(...args: unknown[]);
 
   constructor() {
     const platform = inject(Platform);
@@ -941,6 +927,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
    * is properly hidden.
    */
   private _watchDrawerToggle(drawer: MatDrawer): void {
+    //
     drawer._animationStarted.pipe(takeUntil(this._drawers.changes)).subscribe(() => {
       this.updateContentMargins();
       this._changeDetectorRef.markForCheck();

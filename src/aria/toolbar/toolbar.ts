@@ -55,7 +55,7 @@ import {sortDirectives} from './utils';
     '(keydown)': '_pattern.onKeydown($event)',
     '(click)': '_pattern.onClick($event)',
     '(pointerdown)': '_pattern.onPointerdown($event)',
-    '(focusin)': '_onFocus()',
+    '(focusin)': '_pattern.onFocusIn()',
   },
 })
 export class Toolbar<V> {
@@ -83,7 +83,7 @@ export class Toolbar<V> {
    * Whether to allow disabled items to receive focus. When `true`, disabled items are
    * focusable but not interactive. When `false`, disabled items are skipped during navigation.
    */
-  softDisabled = input(true, {transform: booleanAttribute});
+  readonly softDisabled = input(true, {transform: booleanAttribute});
 
   /** Whether the toolbar is disabled. */
   readonly disabled = input(false, {transform: booleanAttribute});
@@ -92,7 +92,7 @@ export class Toolbar<V> {
   readonly wrap = input(true, {transform: booleanAttribute});
 
   /** The values of the selected widgets within the toolbar. */
-  readonly values = model<V[]>([]);
+  readonly value = model<V[]>([]);
 
   /** The toolbar UIPattern. */
   readonly _pattern: ToolbarPattern<V> = new ToolbarPattern<V>({
@@ -102,22 +102,13 @@ export class Toolbar<V> {
     textDirection: this.textDirection,
     element: () => this._elementRef.nativeElement,
     getItem: e => this._getItem(e),
-    values: this.values,
+    value: this.value,
   });
-
-  /** Whether the toolbar has received focus yet. */
-  private _hasBeenFocused = signal(false);
 
   constructor() {
     afterRenderEffect(() => {
-      if (!this._hasBeenFocused()) {
-        this._pattern.setDefaultState();
-      }
+      this._pattern.setDefaultStateEffect();
     });
-  }
-
-  _onFocus() {
-    this._hasBeenFocused.set(true);
   }
 
   _register(widget: ToolbarWidget<V>) {

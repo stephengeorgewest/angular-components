@@ -1,6 +1,6 @@
 import {Direction} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, SPACE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
-import {OverlayModule, createCloseScrollStrategy} from '@angular/cdk/overlay';
+import {createCloseScrollStrategy} from '@angular/cdk/overlay';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
@@ -16,7 +16,6 @@ import {
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   Injector,
   OnDestroy,
   OnInit,
@@ -3953,51 +3952,6 @@ describe('MatAutocomplete', () => {
       expect(document.querySelectorAll('.mat-pseudo-checkbox').length).toBe(0);
     });
   });
-
-  describe('when used inside a modal', () => {
-    let fixture: ComponentFixture<AutocompleteInsideAModal>;
-
-    beforeEach(() => {
-      fixture = createComponent(AutocompleteInsideAModal);
-      fixture.detectChanges();
-    });
-
-    it('should add the id of the autocomplete panel to the aria-owns of the modal', () => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      const panelId = fixture.componentInstance.autocomplete.id;
-      const modalElement = fixture.componentInstance.modal.nativeElement;
-
-      expect(modalElement.getAttribute('aria-owns')?.split(' '))
-        .withContext('expecting modal to own the autocommplete panel')
-        .toContain(panelId);
-    });
-
-    it('should remove the aria-owns attribute of the modal when the autocomplete panel closes', () => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.componentInstance.trigger.closePanel();
-      fixture.detectChanges();
-
-      const modalElement = fixture.componentInstance.modal.nativeElement;
-
-      expect(modalElement.getAttribute('aria-owns')).toBeFalsy();
-    });
-
-    it('should readd the aria-owns attribute of the modal when the autocomplete panel opens again', () => {
-      fixture.componentInstance.trigger.openPanel();
-      fixture.componentInstance.trigger.closePanel();
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
-
-      const panelId = fixture.componentInstance.autocomplete.id;
-      const modalElement = fixture.componentInstance.modal.nativeElement;
-
-      expect(modalElement.getAttribute('aria-owns')?.split(' '))
-        .withContext('expecting modal to own the autocommplete panel')
-        .toContain(panelId);
-    });
-  });
 });
 
 const SIMPLE_AUTOCOMPLETE_TEMPLATE = `
@@ -4043,6 +3997,7 @@ const SIMPLE_AUTOCOMPLETE_TEMPLATE = `
     MatInputModule,
     ReactiveFormsModule,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SimpleAutocomplete implements OnDestroy {
   stateCtrl = new FormControl<{name: string; code: string} | string | null>(null);
@@ -4109,6 +4064,7 @@ class SimpleAutocomplete implements OnDestroy {
     MatInputModule,
     ReactiveFormsModule,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SimpleAutocompleteShadowDom extends SimpleAutocomplete {}
 
@@ -4136,6 +4092,7 @@ class SimpleAutocompleteShadowDom extends SimpleAutocomplete {}
     ReactiveFormsModule,
     AsyncPipe,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgIfAutocomplete {
   optionCtrl = new FormControl('');
@@ -4174,6 +4131,7 @@ class NgIfAutocomplete {
     </mat-autocomplete>
   `,
   imports: [MatAutocomplete, MatAutocompleteTrigger, MatOption, MatInputModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithoutForms {
   filteredStates!: any[];
@@ -4204,6 +4162,7 @@ class AutocompleteWithoutForms {
     </mat-autocomplete>
   `,
   imports: [MatAutocomplete, MatAutocompleteTrigger, MatOption, MatInputModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithNgModel {
   filteredStates!: any[];
@@ -4236,6 +4195,7 @@ class AutocompleteWithNgModel {
     </mat-autocomplete>
   `,
   imports: [MatAutocomplete, MatAutocompleteTrigger, MatOption, MatInputModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithNumbers {
   selectedNumber!: number;
@@ -4285,6 +4245,7 @@ class AutocompleteWithOnPushDelay implements OnInit {
     </mat-autocomplete>
   `,
   imports: [MatAutocomplete, MatAutocompleteTrigger, MatOption, ReactiveFormsModule, AsyncPipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithNativeInput {
   optionCtrl = new FormControl('');
@@ -4309,6 +4270,7 @@ class AutocompleteWithNativeInput {
 @Component({
   template: `<input placeholder="Choose" [matAutocomplete]="null!" [formControl]="control">`,
   imports: [MatAutocompleteTrigger, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithoutPanel {
   @ViewChild(MatAutocompleteTrigger) trigger!: MatAutocompleteTrigger;
@@ -4341,6 +4303,7 @@ class AutocompleteWithoutPanel {
     MatInputModule,
     FormsModule,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithGroups {
   @ViewChild(MatAutocompleteTrigger) trigger!: MatAutocompleteTrigger;
@@ -4389,6 +4352,7 @@ class AutocompleteWithGroups {
     MatInputModule,
     FormsModule,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithIndirectGroups extends AutocompleteWithGroups {}
 
@@ -4407,6 +4371,7 @@ class AutocompleteWithIndirectGroups extends AutocompleteWithGroups {}
     </mat-autocomplete>
   `,
   imports: [MatAutocomplete, MatAutocompleteTrigger, MatOption, MatInputModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithSelectEvent {
   selectedState!: string;
@@ -4423,6 +4388,7 @@ class AutocompleteWithSelectEvent {
     <mat-autocomplete #auto="matAutocomplete"></mat-autocomplete>
   `,
   imports: [MatAutocomplete, MatAutocompleteTrigger, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class PlainAutocompleteInputWithFormControl {
   formControl = new FormControl('');
@@ -4441,6 +4407,7 @@ class PlainAutocompleteInputWithFormControl {
     </mat-autocomplete>
   `,
   imports: [MatAutocomplete, MatAutocompleteTrigger, MatOption, MatInputModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithNumberInputAndNgModel {
   selectedValue!: number;
@@ -4481,6 +4448,7 @@ class AutocompleteWithNumberInputAndNgModel {
     MatInputModule,
     FormsModule,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithDifferentOrigin {
   @ViewChild(MatAutocompleteTrigger) trigger!: MatAutocompleteTrigger;
@@ -4496,6 +4464,7 @@ class AutocompleteWithDifferentOrigin {
     <mat-autocomplete #auto="matAutocomplete"></mat-autocomplete>
   `,
   imports: [MatAutocomplete, MatAutocompleteTrigger, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithNativeAutocompleteAttribute {
   value!: string;
@@ -4504,6 +4473,7 @@ class AutocompleteWithNativeAutocompleteAttribute {
 @Component({
   template: '<input [matAutocomplete]="null!" matAutocompleteDisabled>',
   imports: [MatAutocompleteTrigger],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class InputWithoutAutocompleteAndDisabled {}
 
@@ -4520,6 +4490,7 @@ class InputWithoutAutocompleteAndDisabled {}
     </mat-autocomplete>
   `,
   imports: [MatAutocomplete, MatAutocompleteTrigger, MatOption, MatInputModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithActivatedEvent {
   states = ['California', 'West Virginia', 'Florida'];
@@ -4532,48 +4503,6 @@ class AutocompleteWithActivatedEvent {
 
 @Component({
   template: `
-    <button cdkOverlayOrigin #trigger="cdkOverlayOrigin">open dialog</button>
-    <ng-template cdkConnectedOverlay [cdkConnectedOverlayOpen]="true"
-      [cdkConnectedOverlayOrigin]="trigger">
-      <div role="dialog" [attr.aria-modal]="'true'" #modal>
-        <mat-form-field>
-          <mat-label>Food</mat-label>
-          <input matInput [matAutocomplete]="reactiveAuto" [formControl]="formControl">
-        </mat-form-field>
-        <mat-autocomplete #reactiveAuto="matAutocomplete">
-          @for (food of foods; track food; let index = $index) {
-            <mat-option [value]="food">{{food.viewValue}}</mat-option>
-          }
-        </mat-autocomplete>
-      </div>
-    </ng-template>
-  `,
-  imports: [
-    MatAutocomplete,
-    MatAutocompleteTrigger,
-    MatOption,
-    MatInputModule,
-    ReactiveFormsModule,
-    OverlayModule,
-  ],
-})
-class AutocompleteInsideAModal {
-  foods = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'},
-  ];
-
-  formControl = new FormControl();
-
-  @ViewChild(MatAutocomplete) autocomplete!: MatAutocomplete;
-  @ViewChild(MatAutocompleteTrigger) trigger!: MatAutocompleteTrigger;
-  @ViewChildren(MatOption) options!: QueryList<MatOption>;
-  @ViewChild('modal') modal!: ElementRef;
-}
-
-@Component({
-  template: `
     <mat-form-field>
       <input matInput [matAutocomplete]="auto">
     </mat-form-field>
@@ -4582,6 +4511,7 @@ class AutocompleteInsideAModal {
     </mat-autocomplete>
   `,
   imports: [MatAutocomplete, MatAutocompleteTrigger, MatInputModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AutocompleteWithoutOptions {
   @ViewChild(MatAutocompleteTrigger, {static: true}) trigger!: MatAutocompleteTrigger;
