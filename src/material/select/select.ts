@@ -1002,7 +1002,6 @@ export class MatSelect
       } else {
         // first button tab out left
         const button = this.panel?.nativeElement?.querySelectorAll("button")?.[0];
-        this._defocusedDueToPanelClick = true;
 
         // Select the panel when tabbing back from the buttons.
         if (document.activeElement === button) {
@@ -1248,9 +1247,8 @@ export class MatSelect
     });
   }
 
-  private _defocusedDueToPanelClick = false;
-  public panelClick() {
-    this._defocusedDueToPanelClick = true;
+  public panelClick(event: MouseEvent) {
+    event.preventDefault();
   }
 
   /** close the panel when focus is lost */
@@ -1260,22 +1258,17 @@ export class MatSelect
 
       this._focusMonitor.monitor(this.panel.nativeElement, true).subscribe(origin => {
         // The panel should be closed when the user focuses anywhere outside of the panel or its trigger.
-        if (origin === null) {
-          // if the focus was lost due to clicking on the panel don't close here.
-          if (this.panelOpen && !this._defocusedDueToPanelClick) {
-            // Select the active item when tabbing away. This is consistent with how the native
-            // select behaves. Note that we only want to do this in single selection mode.
-            if (!this.multiple && this._keyManager.activeItem) {
-              this._keyManager.activeItem._selectViaInteraction();
-            }
-
-            // Restore focus to the trigger before closing. Ensures that the focus
-            // position won't be lost if the user got focus into the overlay.
-            this.focusSelect();
-            this.close();
+        if (origin === null && this.panelOpen) {
+          // Select the active item when tabbing away. This is consistent with how the native
+          // select behaves. Note that we only want to do this in single selection mode.
+          if (!this.multiple && this._keyManager.activeItem) {
+            this._keyManager.activeItem._selectViaInteraction();
           }
-        } else {
-          this._defocusedDueToPanelClick = false;
+
+          // Restore focus to the trigger before closing. Ensures that the focus
+          // position won't be lost if the user got focus into the overlay.
+          this.focusSelect();
+          this.close();
         }
       });
     }, 100);
