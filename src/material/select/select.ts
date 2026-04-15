@@ -992,6 +992,7 @@ export class MatSelect
         // Select the active item when tabbing away. This is consistent with how the native
         // select behaves. I'm not sure why this doesn't work in the focus monitor.
         if (document.activeElement === lastButton) {
+          this._ignoreFocusChange = false;
           this.focusSelect();
         } else if (!this._multiple) {
           lastButton.focus();
