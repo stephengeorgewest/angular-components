@@ -964,11 +964,18 @@ export class MatSelect
       !isTyping &&
       (keyCode === ENTER || keyCode === SPACE) &&
       manager.activeItem &&
-      !hasModifierKey(event) &&
-      document.activeElement === this.panel.nativeElement.children[0]
+      !hasModifierKey(event)
     ) {
-      event.preventDefault();
-      manager.activeItem._selectViaInteraction();
+      const buttonList = [...(this.panel?.nativeElement?.querySelectorAll("button") as any)];
+
+      if (!buttonList.some(b => document.activeElement === b)) {
+          event.preventDefault();
+          manager.activeItem._selectViaInteraction();
+
+          if (!this._multiple) {
+              this.close();
+          }
+      }
     } else if (!isTyping && this._multiple && keyCode === A && event.ctrlKey) {
       event.preventDefault();
       const hasDeselectedOptions = this.options.some(opt => !opt.disabled && !opt.selected);
@@ -1039,12 +1046,6 @@ export class MatSelect
 
         if (!buttonList.some(b => document.activeElement === b)) {
           manager.onKeydown(event);
-
-          if (event.key === " " && manager.activeItem) {
-            event.preventDefault();
-            manager.activeItem._selectViaInteraction();
-            this.close();
-          }
         }
       }
     }
