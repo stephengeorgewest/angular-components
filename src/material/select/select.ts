@@ -987,36 +987,32 @@ export class MatSelect
       if (!event.shiftKey) {
         // last button tab out to right
         const buttonList = this.panel?.nativeElement?.querySelectorAll("button");
-        const button = buttonList ? buttonList[buttonList.length - 1] : undefined;
+        const lastButton = buttonList ? buttonList[buttonList.length - 1] : undefined;
 
         // Select the active item when tabbing away. This is consistent with how the native
         // select behaves. I'm not sure why this doesn't work in the focus monitor.
-        if (document.activeElement === button) {
+        if (document.activeElement === lastButton) {
           this.focusSelect();
         } else if (!this._multiple) {
-          button.focus();
+          lastButton.focus();
           event.preventDefault();
         }
       } else {
         // first button tab out left
-        const button = this.panel?.nativeElement?.querySelectorAll("button")?.[0];
+        const firstButton = this.panel?.nativeElement?.querySelectorAll("button")?.[0];
 
         // Select the panel when tabbing back from the buttons.
-        if (document.activeElement === button) {
+        if (document.activeElement === firstButton) {
+          this._ignoreFocusChange = true;
+          event.preventDefault();
+
           if (this._multiple) {
-            // focusing on the options doesn't work,
-            // but focusing on the panel does.
-            this.panel?.nativeElement.focus();
+            this.focusOptionsList();
           } else {
-            // focusing on the panel doesn't work,
-            // but focusing on the parent does.
+            // optionslist isn't focusable
             this.focusSelect();
-            event.preventDefault();
           }
-        } else if (
-          !this._multiple ||
-          document.activeElement === this.panel.nativeElement.children[0]
-        ) {
+        } else if (!this._buttonsHasFocus) {
           this.close();
         }
       }
@@ -1250,6 +1246,7 @@ export class MatSelect
     event.preventDefault();
   }
 
+  private _ignoreFocusChange = false;
   /** close the panel when focus is lost */
   private _initFocusMonitor() {
     window.setTimeout(() => { // wait until panel finishes opening
@@ -1258,16 +1255,20 @@ export class MatSelect
       this._focusMonitor.monitor(this.panel.nativeElement, true).subscribe(origin => {
         // The panel should be closed when the user focuses anywhere outside of the panel or its trigger.
         if (origin === null && this.panelOpen) {
-          // Select the active item when tabbing away. This is consistent with how the native
-          // select behaves. Note that we only want to do this in single selection mode.
-          if (!this.multiple && this._keyManager.activeItem) {
-            this._keyManager.activeItem._selectViaInteraction();
-          }
+          if (!this._ignoreFocusChange) {
+            // Select the active item when tabbing away. This is consistent with how the native
+            // select behaves. Note that we only want to do this in single selection mode.
+            if (!this.multiple && this._keyManager.activeItem) {
+              this._keyManager.activeItem._selectViaInteraction();
+            }
 
-          // Restore focus to the trigger before closing. Ensures that the focus
-          // position won't be lost if the user got focus into the overlay.
-          this.focusSelect();
-          this.close();
+            // Restore focus to the trigger before closing. Ensures that the focus
+            // position won't be lost if the user got focus into the overlay.
+            this.focusSelect();
+            this.close();
+          } else {
+            this._ignoreFocusChange = false;
+          }
         }
       });
     }, 100);
