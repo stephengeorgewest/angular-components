@@ -776,7 +776,7 @@ export class MatSelect
       this._onTouched();
       // Required for the MDC form field to pick up when the overlay has been closed.
       this.stateChanges.next();
-      this.focusTrigger();
+      this.focusSelect();
       this._focusMonitor.stopMonitoring(this.panel.nativeElement);
 
       // Simulate the animation event before we moved away from `@angular/animations`.
@@ -987,7 +987,7 @@ export class MatSelect
         // Select the active item when tabbing away. This is consistent with how the native
         // select behaves. I'm not sure why this doesn't work in the focus monitor.
         if (document.activeElement === button) {
-          this.focusTrigger();
+          this.focusSelect();
         } else if (!this._multiple) {
           button.focus();
           event.preventDefault();
@@ -1006,7 +1006,7 @@ export class MatSelect
           } else {
             // focusing on the panel doesn't work,
             // but focusing on the parent does.
-            this.focusTrigger();
+            this.focusSelect();
             event.preventDefault();
           }
         } else if (
@@ -1273,7 +1273,7 @@ export class MatSelect
 
             // Restore focus to the trigger before closing. Ensures that the focus
             // position won't be lost if the user got focus into the overlay.
-            this.focusTrigger();
+            this.focusSelect();
             this.close();
           }
         } else {
@@ -1292,7 +1292,7 @@ export class MatSelect
 
       if (event.isUserInput && !this.multiple && this._panelOpen) {
         this.close();
-        this.focusTrigger();
+        this.focusSelect();
       }
     });
 
@@ -1336,7 +1336,7 @@ export class MatSelect
 
         if (isUserInput) {
           // In case the user selected the option with their mouse, we
-          // want to restore focus back to the trigger, in order to
+          // want to restore focus back to the list, in order to
           // prevent the select keyboard controls from clashing with
           // the ones from `mat-option`.
           this.focusOptionsList();
@@ -1413,15 +1413,13 @@ export class MatSelect
     return !this._panelOpen && !this.disabled && this.options?.length > 0 && !!this._overlayDir;
   }
 
+  /** Focuses the select element. */
+  focusSelect(options?: FocusOptions): void {
+      this._elementRef.nativeElement.focus(options);
+  }
   /** Focuses the select options list. */
   focusOptionsList(options?: FocusOptions): void {
       this.panel?.nativeElement.children[0].focus(options);
-  }
-
-  /** Focus the select trigger */
-  focusTrigger(options?: FocusOptions): void {
-      const selectElementByParent = this.trigger.nativeElement.parentNode;
-      selectElementByParent.focus(options);
   }
 
   /** Gets the aria-labelledby for the select panel. */
