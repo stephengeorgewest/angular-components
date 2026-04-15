@@ -988,6 +988,9 @@ export class MatSelect
         // select behaves. I'm not sure why this doesn't work in the focus monitor.
         if (document.activeElement === button) {
           this.focusParent();
+        } else if (!this._multiple) {
+          button.focus();
+          event.preventDefault();
         }
       } else {
         // first button tab out left
@@ -996,11 +999,20 @@ export class MatSelect
 
         // Select the panel when tabbing back from the buttons.
         if (document.activeElement === button) {
-          // this.focusOptions();
-          // focusing on the options doesn't work,
-          // but focusing on the panel does.
-          this.panel?.nativeElement.focus();
-        } else if (document.activeElement === this.panel.nativeElement.children[0]) {
+          if (this._multiple) {
+            // focusing on the options doesn't work,
+            // but focusing on the panel does.
+            this.panel?.nativeElement.focus();
+          } else {
+            // focusing on the panel doesn't work,
+            // but focusing on the parent does.
+            this.focusParent();
+            event.preventDefault();
+          }
+        } else if (
+          !this._multiple ||
+          document.activeElement === this.panel.nativeElement.children[0]
+        ) {
           this.focusParent();
           this.close();
         }
@@ -1008,7 +1020,20 @@ export class MatSelect
     } else if (document.activeElement === this.panel.nativeElement.children[0]) {
       const previouslyFocusedIndex = manager.activeItemIndex;
 
-      manager.onKeydown(event);
+      if (this.multiple) {
+        manager.onKeydown(event);
+      } else {
+        const buttonList = [
+          ...(this.panel?.nativeElement?.querySelectorAll("button") as any)
+        ];
+        if (!buttonList.some(b => document.activeElement === b)) {
+          manager.onKeydown(event);
+        }
+        if (event.key === " ") {
+          event.preventDefault();
+          this.close();
+        }
+      }
 
       if (
         this._multiple &&
