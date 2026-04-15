@@ -1016,35 +1016,36 @@ export class MatSelect
           this.close();
         }
       }
-      } else if (
-          !this._multiple ||
-          document.activeElement === this.panel.nativeElement.children[0]
-      ) {
+    } else {
       const previouslyFocusedIndex = manager.activeItemIndex;
 
-      if (this.multiple) {
-        manager.onKeydown(event);
-      } else {
+      if(this._multiple){
+        if(document.activeElement === this.panel.nativeElement.children[0] ){
+           manager.onKeydown(event);
+        }
+
+          if (
+            isArrowKey &&
+            event.shiftKey &&
+            manager.activeItem &&
+            manager.activeItemIndex !== previouslyFocusedIndex
+          ) {
+              manager.activeItem._selectViaInteraction();
+          }
+        } else {
         const buttonList = [
           ...(this.panel?.nativeElement?.querySelectorAll("button") as any)
         ];
+
         if (!buttonList.some(b => document.activeElement === b)) {
           manager.onKeydown(event);
-        }
-        if (event.key === " ") {
-          event.preventDefault();
-          this.close();
-        }
-      }
 
-      if (
-        this._multiple &&
-        isArrowKey &&
-        event.shiftKey &&
-        manager.activeItem &&
-        manager.activeItemIndex !== previouslyFocusedIndex
-      ) {
-        manager.activeItem._selectViaInteraction();
+          if (event.key === " " && manager.activeItem) {
+            event.preventDefault();
+            manager.activeItem._selectViaInteraction();
+            this.close();
+          }
+        }
       }
     }
   }
