@@ -58,8 +58,7 @@
     [attr.aria-label]="ariaLabel || null"
     [attr.aria-labelledby]="_getPanelAriaLabelledby()"
     (mousedown)="panelClick()"
-    (keydown)="_handleKeydown($event)"
-  >
+    (keydown)="_handleKeydown($event)">
     <div class="content" role="listbox" [attr.aria-multiselectable]="multiple">
       <ng-content></ng-content>
     </div>
