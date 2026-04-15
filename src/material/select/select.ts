@@ -1024,28 +1024,24 @@ export class MatSelect
         }
       }
     } else {
-      const previouslyFocusedIndex = manager.activeItemIndex;
+      const buttonList = [
+        ...(this.panel?.nativeElement?.querySelectorAll("button") as any)
+      ];
+
+      if (!buttonList.some(b => document.activeElement === b)) {
+        manager.onKeydown(event);
+      }
 
       if(this._multiple){
-        if(document.activeElement === this.panel.nativeElement.children[0] ){
-           manager.onKeydown(event);
-        }
+        const previouslyFocusedIndex = manager.activeItemIndex;
 
-          if (
-            isArrowKey &&
-            event.shiftKey &&
-            manager.activeItem &&
-            manager.activeItemIndex !== previouslyFocusedIndex
-          ) {
-              manager.activeItem._selectViaInteraction();
-          }
-        } else {
-        const buttonList = [
-          ...(this.panel?.nativeElement?.querySelectorAll("button") as any)
-        ];
-
-        if (!buttonList.some(b => document.activeElement === b)) {
-          manager.onKeydown(event);
+        if (
+          isArrowKey &&
+          event.shiftKey &&
+          manager.activeItem &&
+          manager.activeItemIndex !== previouslyFocusedIndex
+        ) {
+            manager.activeItem._selectViaInteraction();
         }
       }
     }
