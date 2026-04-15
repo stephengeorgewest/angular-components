@@ -776,7 +776,7 @@ export class MatSelect
       this._onTouched();
       // Required for the MDC form field to pick up when the overlay has been closed.
       this.stateChanges.next();
-      this.focusParent();
+      this.focusTrigger();
       this._focusMonitor.stopMonitoring(this.panel.nativeElement);
 
       // Simulate the animation event before we moved away from `@angular/animations`.
@@ -987,7 +987,7 @@ export class MatSelect
         // Select the active item when tabbing away. This is consistent with how the native
         // select behaves. I'm not sure why this doesn't work in the focus monitor.
         if (document.activeElement === button) {
-          this.focusParent();
+          this.focusTrigger();
         } else if (!this._multiple) {
           button.focus();
           event.preventDefault();
@@ -1006,7 +1006,7 @@ export class MatSelect
           } else {
             // focusing on the panel doesn't work,
             // but focusing on the parent does.
-            this.focusParent();
+            this.focusTrigger();
             event.preventDefault();
           }
         } else if (
@@ -1273,7 +1273,7 @@ export class MatSelect
 
             // Restore focus to the trigger before closing. Ensures that the focus
             // position won't be lost if the user got focus into the overlay.
-            this.focusParent();
+            this.focusTrigger();
             this.close();
           }
         } else {
@@ -1292,7 +1292,7 @@ export class MatSelect
 
       if (event.isUserInput && !this.multiple && this._panelOpen) {
         this.close();
-        this.focusParent();
+        this.focusTrigger();
       }
     });
 
@@ -1419,7 +1419,7 @@ export class MatSelect
   }
 
   /** Focus the select trigger */
-  focusParent(options?: FocusOptions): void {
+  focusTrigger(options?: FocusOptions): void {
       const selectElementByParent = this.trigger.nativeElement.parentNode;
       selectElementByParent.focus(options);
   }
