@@ -966,9 +966,7 @@ export class MatSelect
       manager.activeItem &&
       !hasModifierKey(event)
     ) {
-      const buttonList = [...(this.panel?.nativeElement?.querySelectorAll("button") as any)];
-
-      if (!buttonList.some(b => document.activeElement === b)) {
+      if (!this._buttonsHasFocus()) {
           event.preventDefault();
           manager.activeItem._selectViaInteraction();
 
@@ -1023,11 +1021,7 @@ export class MatSelect
         }
       }
     } else {
-      const buttonList = [
-        ...(this.panel?.nativeElement?.querySelectorAll("button") as any)
-      ];
-
-      if (!buttonList.some(b => document.activeElement === b)) {
+      if (!this._buttonsHasFocus()) {
         manager.onKeydown(event);
       }
 
@@ -1044,6 +1038,11 @@ export class MatSelect
         }
       }
     }
+  }
+
+  private _buttonsHasFocus(): boolean {
+      const buttonList = [...(this.panel?.nativeElement?.querySelectorAll("button") as any)];
+      return buttonList.some(b => document.activeElement === b);
   }
 
   /** Handles keyboard events coming from the overlay. */
