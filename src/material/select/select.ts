@@ -1013,11 +1013,13 @@ export class MatSelect
           !this._multiple ||
           document.activeElement === this.panel.nativeElement.children[0]
         ) {
-          this.focusParent();
           this.close();
         }
       }
-    } else if (document.activeElement === this.panel.nativeElement.children[0]) {
+      } else if (
+          !this._multiple ||
+          document.activeElement === this.panel.nativeElement.children[0]
+      ) {
       const previouslyFocusedIndex = manager.activeItemIndex;
 
       if (this.multiple) {
