@@ -997,8 +997,12 @@ export class MatSelect
           this._ignoreFocusChange = false;
           this.focusSelect();
         } else if (!this._multiple) {
-          lastButton.focus();
-          event.preventDefault();
+          if (!this._buttonsHasFocus()) {
+            // options list doesn't get focus, so apply focus to first button instead of item in the dom after the trigger.
+            const firstButton = this.panel?.nativeElement?.querySelectorAll("button")?.[0];
+            firstButton.focus();
+            event.preventDefault();
+          }
         }
       } else {
         // first button tab out left
