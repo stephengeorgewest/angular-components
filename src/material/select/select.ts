@@ -150,8 +150,8 @@ export class MatSelectChange<T = any> {
 }
 
 @Component({
-    selector: "mat-select-buttons",
-    template: `<ng-content></ng-content>`
+  selector: "mat-select-buttons",
+  template: `<ng-content></ng-content>`
 })
 export class MatSelectButtons {}
 
