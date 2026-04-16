@@ -989,19 +989,30 @@ export class MatSelect
       if (!event.shiftKey) {
         // last button tab out to right
         const buttonList = this.panel?.nativeElement?.querySelectorAll("button");
-        const lastButton = buttonList ? buttonList[buttonList.length - 1] : undefined;
+        if (!buttonList || buttonList.length == 0) {
+          if (!this._multiple) {
+            // Select the active item when tabbing away. This is consistent with how the native
+            // select behaves. Note that we only want to do this in single selection mode.
+            if (this._keyManager.activeItem) {
+              this._keyManager.activeItem._selectViaInteraction();
+            }
+          }
+          this.close();
+        } else {
+          const lastButton = buttonList[buttonList.length - 1];
 
-        // Select the active item when tabbing away. This is consistent with how the native
-        // select behaves. 
-        if (document.activeElement === lastButton) {
-          this._ignoreFocusChange = false;
-          this.focusSelect();
-        } else if (!this._multiple) {
-          if (!this._buttonsHasFocus()) {
-            // options list doesn't get focus, so apply focus to first button instead of item in the dom after the trigger.
-            const firstButton = this.panel?.nativeElement?.querySelectorAll("button")?.[0];
-            firstButton.focus();
-            event.preventDefault();
+          // Select the active item when tabbing away. This is consistent with how the native
+          // select behaves.
+          if (document.activeElement === lastButton) {
+            this._ignoreFocusChange = false;
+            this.focusSelect();
+          } else if (!this._multiple) {
+            if (!this._buttonsHasFocus()) {
+              // options list doesn't get focus, so apply focus to first button instead of item in the dom after the trigger.
+              const firstButton = this.panel?.nativeElement?.querySelectorAll("button")?.[0];
+              firstButton.focus();
+              event.preventDefault();
+            }
           }
         }
       } else {
