@@ -969,12 +969,12 @@ export class MatSelect
       !hasModifierKey(event)
     ) {
       if (!this._buttonsHasFocus()) {
-          event.preventDefault();
-          manager.activeItem._selectViaInteraction();
+        event.preventDefault();
+        manager.activeItem._selectViaInteraction();
 
-          if (!this._multiple) {
-              this.close();
-          }
+        if (!this._multiple) {
+          this.close();
+        }
       }
     } else if (!isTyping && this._multiple && keyCode === A && event.ctrlKey) {
       event.preventDefault();
@@ -1048,7 +1048,7 @@ export class MatSelect
           manager.activeItem &&
           manager.activeItemIndex !== previouslyFocusedIndex
         ) {
-            manager.activeItem._selectViaInteraction();
+          manager.activeItem._selectViaInteraction();
         }
       }
     }
@@ -1420,11 +1420,11 @@ export class MatSelect
 
   /** Focuses the select element. */
   focusSelect(options?: FocusOptions): void {
-      this._elementRef.nativeElement.focus(options);
+    this._elementRef.nativeElement.focus(options);
   }
   /** Focuses the select options list. */
   focusOptionsList(options?: FocusOptions): void {
-      this.panel?.nativeElement.children[0].focus(options);
+    this.panel?.nativeElement.children[0].focus(options);
   }
 
   /** Gets the aria-labelledby for the select panel. */
