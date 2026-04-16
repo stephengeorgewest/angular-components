@@ -776,6 +776,8 @@ export class MatSelect
       this._onTouched();
       // Required for the MDC form field to pick up when the overlay has been closed.
       this.stateChanges.next();
+      // Restore focus to the trigger before closing. Ensures that the focus
+      // position won't be lost if the user got focus into the overlay.
       this.focusSelect();
       this._focusMonitor.stopMonitoring(this.panel.nativeElement);
 
@@ -990,7 +992,7 @@ export class MatSelect
         const lastButton = buttonList ? buttonList[buttonList.length - 1] : undefined;
 
         // Select the active item when tabbing away. This is consistent with how the native
-        // select behaves. I'm not sure why this doesn't work in the focus monitor.
+        // select behaves. 
         if (document.activeElement === lastButton) {
           this._ignoreFocusChange = false;
           this.focusSelect();
@@ -1263,9 +1265,6 @@ export class MatSelect
               this._keyManager.activeItem._selectViaInteraction();
             }
 
-            // Restore focus to the trigger before closing. Ensures that the focus
-            // position won't be lost if the user got focus into the overlay.
-            this.focusSelect();
             this.close();
           } else {
             this._ignoreFocusChange = false;
@@ -1284,7 +1283,6 @@ export class MatSelect
 
       if (event.isUserInput && !this.multiple && this._panelOpen) {
         this.close();
-        this.focusSelect();
       }
     });
 
