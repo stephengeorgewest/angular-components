@@ -1035,13 +1035,12 @@ export class MatSelect
         }
       }
     } else {
+      const previouslyFocusedIndex = manager.activeItemIndex;
       if (!this._buttonsHasFocus()) {
         manager.onKeydown(event);
       }
 
       if(this._multiple){
-        const previouslyFocusedIndex = manager.activeItemIndex;
-
         if (
           isArrowKey &&
           event.shiftKey &&
