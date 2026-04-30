@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {_IdGenerator, ActiveDescendantKeyManager, FocusMonitor, LiveAnnouncer} from '@angular/cdk/a11y';
+import {
+  _IdGenerator,
+  ActiveDescendantKeyManager,
+  FocusMonitor,
+  LiveAnnouncer,
+} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {SelectionModel} from '@angular/cdk/collections';
 import {
@@ -150,8 +155,8 @@ export class MatSelectChange<T = any> {
 }
 
 @Component({
-  selector: "mat-select-buttons",
-  template: `<ng-content></ng-content>`
+  selector: 'mat-select-buttons',
+  template: `<ng-content></ng-content>`,
 })
 export class MatSelectButtons {}
 
@@ -988,7 +993,7 @@ export class MatSelect
     } else if (keyCode === TAB) {
       if (!event.shiftKey) {
         // last button tab out to right
-        const buttonList = this.panel?.nativeElement?.querySelectorAll("button");
+        const buttonList = this.panel?.nativeElement?.querySelectorAll('button');
         if (!buttonList || buttonList.length == 0) {
           if (!this._multiple) {
             // Select the active item when tabbing away. This is consistent with how the native
@@ -1009,7 +1014,7 @@ export class MatSelect
           } else if (!this._multiple) {
             if (!this._buttonsHasFocus()) {
               // options list doesn't get focus, so apply focus to first button instead of item in the dom after the trigger.
-              const firstButton = this.panel?.nativeElement?.querySelectorAll("button")?.[0];
+              const firstButton = this.panel?.nativeElement?.querySelectorAll('button')?.[0];
               firstButton.focus();
               event.preventDefault();
             }
@@ -1017,7 +1022,7 @@ export class MatSelect
         }
       } else {
         // first button tab out left
-        const firstButton = this.panel?.nativeElement?.querySelectorAll("button")?.[0];
+        const firstButton = this.panel?.nativeElement?.querySelectorAll('button')?.[0];
 
         // Select the panel when tabbing back from the buttons.
         if (document.activeElement === firstButton) {
@@ -1040,7 +1045,7 @@ export class MatSelect
         manager.onKeydown(event);
       }
 
-      if(this._multiple){
+      if (this._multiple) {
         if (
           isArrowKey &&
           event.shiftKey &&
@@ -1054,8 +1059,8 @@ export class MatSelect
   }
 
   private _buttonsHasFocus(): boolean {
-      const buttonList = [...(this.panel?.nativeElement?.querySelectorAll("button") as any)];
-      return buttonList.some(b => document.activeElement === b);
+    const buttonList = [...(this.panel?.nativeElement?.querySelectorAll('button') as any)];
+    return buttonList.some(b => document.activeElement === b);
   }
 
   /** Handles keyboard events coming from the overlay. */
@@ -1266,7 +1271,8 @@ export class MatSelect
   private _ignoreFocusChange = false;
   /** close the panel when focus is lost */
   private _initFocusMonitor() {
-    window.setTimeout(() => { // wait until panel finishes opening
+    window.setTimeout(() => {
+      // wait until panel finishes opening
       this.focusOptionsList();
 
       this._focusMonitor.monitor(this.panel.nativeElement, true).subscribe(origin => {
