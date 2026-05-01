@@ -15,7 +15,7 @@ import {MatSelect, MatSelectButtons, MatSelectTrigger} from './select';
 import {BidiModule} from '@angular/cdk/bidi';
 
 @NgModule({
-  imports: [OverlayModule, MatOptionModule, MatSelect, MatSelectTrigger],
+  imports: [OverlayModule, MatOptionModule, MatSelect, MatSelectButtons, MatSelectTrigger],
   exports: [
     BidiModule,
     CdkScrollableModule,

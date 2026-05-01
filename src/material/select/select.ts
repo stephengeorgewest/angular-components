@@ -784,8 +784,9 @@ export class MatSelect
       // Restore focus to the trigger before closing. Ensures that the focus
       // position won't be lost if the user got focus into the overlay.
       this.focusSelect();
-      this._focusMonitor.stopMonitoring(this.panel.nativeElement);
-
+      if (this.panel) {
+        this._focusMonitor.stopMonitoring(this.panel.nativeElement);
+      }
       // Simulate the animation event before we moved away from `@angular/animations`.
       Promise.resolve().then(() => this.openedChange.emit(false));
     }
@@ -1273,6 +1274,9 @@ export class MatSelect
   private _initFocusMonitor() {
     window.setTimeout(() => {
       // wait until panel finishes opening
+      if (!this.panel) {
+        return;
+      }
       this.focusOptionsList();
 
       this._focusMonitor.monitor(this.panel.nativeElement, true).subscribe(origin => {
