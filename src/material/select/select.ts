@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {_IdGenerator, ActiveDescendantKeyManager, LiveAnnouncer} from '@angular/cdk/a11y';
+import {
+  _IdGenerator,
+  ActiveDescendantKeyManager,
+  FocusMonitor,
+  LiveAnnouncer,
+} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {SelectionModel} from '@angular/cdk/collections';
 import {
@@ -18,6 +23,7 @@ import {
   LEFT_ARROW,
   RIGHT_ARROW,
   SPACE,
+  TAB,
   UP_ARROW,
 } from '@angular/cdk/keycodes';
 import {
@@ -148,6 +154,12 @@ export class MatSelectChange<T = any> {
 }
 
 @Component({
+  selector: 'mat-select-buttons',
+  template: `<ng-content></ng-content>`,
+})
+export class MatSelectButtons {}
+
+@Component({
   selector: 'mat-select',
   exportAs: 'matSelect',
   templateUrl: 'select.html',
@@ -258,7 +270,7 @@ export class MatSelect
     const option = this.options.toArray()[index];
 
     if (option) {
-      const panel: HTMLElement = this.panel.nativeElement;
+      const panel: HTMLElement = this.panel.nativeElement.children[0];
       const labelCount = _countGroupLabelsBeforeOption(index, this.options, this.optionGroups);
       const element = option._getHostElement();
 
@@ -339,6 +351,9 @@ export class MatSelect
 
   /** Manages keyboard events for options in the panel. */
   _keyManager!: ActiveDescendantKeyManager<MatOption>;
+
+  /** Monitors focus for panel and buttons. */
+  private _focusMonitor = inject(FocusMonitor);
 
   /** Ideal origin for the overlay panel. */
   _preferredOverlayOrigin: CdkOverlayOrigin | ElementRef | undefined;
@@ -748,7 +763,10 @@ export class MatSelect
     this.stateChanges.next();
 
     // Simulate the animation event before we moved away from `@angular/animations`.
-    Promise.resolve().then(() => this.openedChange.emit(true));
+    Promise.resolve().then(() => {
+      this.openedChange.emit(true);
+      this._initFocusMonitor();
+    });
   }
 
   /** Closes the overlay panel and focuses the host element. */
@@ -761,7 +779,12 @@ export class MatSelect
       this._onTouched();
       // Required for the MDC form field to pick up when the overlay has been closed.
       this.stateChanges.next();
-
+      // Restore focus to the trigger before closing. Ensures that the focus
+      // position won't be lost if the user got focus into the overlay.
+      this.focusSelect();
+      if (this.panel) {
+        this._focusMonitor.stopMonitoring(this.panel.nativeElement);
+      }
       // Simulate the animation event before we moved away from `@angular/animations`.
       Promise.resolve().then(() => this.openedChange.emit(false));
     }
@@ -949,8 +972,14 @@ export class MatSelect
       manager.activeItem &&
       !hasModifierKey(event)
     ) {
-      event.preventDefault();
-      manager.activeItem._selectViaInteraction();
+      if (!this._buttonsHasFocus()) {
+        event.preventDefault();
+        manager.activeItem._selectViaInteraction();
+
+        if (!this._multiple) {
+          this.close();
+        }
+      }
     } else if (!isTyping && this._multiple && keyCode === A && event.ctrlKey) {
       event.preventDefault();
       const hasDeselectedOptions = this.options.some(opt => !opt.disabled && !opt.selected);
@@ -960,21 +989,77 @@ export class MatSelect
           hasDeselectedOptions ? option.select() : option.deselect();
         }
       });
+    } else if (keyCode === TAB) {
+      if (!event.shiftKey) {
+        // last button tab out to right
+        const buttonList = this.panel?.nativeElement?.querySelectorAll('button');
+        if (!buttonList || buttonList.length == 0) {
+          if (!this._multiple) {
+            // Select the active item when tabbing away. This is consistent with how the native
+            // select behaves. Note that we only want to do this in single selection mode.
+            if (this._keyManager.activeItem) {
+              this._keyManager.activeItem._selectViaInteraction();
+            }
+          }
+          this.close();
+        } else {
+          const lastButton = buttonList[buttonList.length - 1];
+
+          // Select the active item when tabbing away. This is consistent with how the native
+          // select behaves.
+          if (document.activeElement === lastButton) {
+            this._ignoreFocusChange = false;
+            this.focusSelect();
+          } else if (!this._multiple) {
+            if (!this._buttonsHasFocus()) {
+              // options list doesn't get focus, so apply focus to first button instead of item in the dom after the trigger.
+              const firstButton = this.panel?.nativeElement?.querySelectorAll('button')?.[0];
+              firstButton.focus();
+              event.preventDefault();
+            }
+          }
+        }
+      } else {
+        // first button tab out left
+        const firstButton = this.panel?.nativeElement?.querySelectorAll('button')?.[0];
+
+        // Select the panel when tabbing back from the buttons.
+        if (document.activeElement === firstButton) {
+          this._ignoreFocusChange = true;
+          event.preventDefault();
+
+          if (this._multiple) {
+            this.focusOptionsList();
+          } else {
+            // optionslist isn't focusable
+            this.focusSelect();
+          }
+        } else if (!this._buttonsHasFocus) {
+          this.close();
+        }
+      }
     } else {
       const previouslyFocusedIndex = manager.activeItemIndex;
+      if (!this._buttonsHasFocus()) {
+        manager.onKeydown(event);
+      }
 
-      manager.onKeydown(event);
-
-      if (
-        this._multiple &&
-        isArrowKey &&
-        event.shiftKey &&
-        manager.activeItem &&
-        manager.activeItemIndex !== previouslyFocusedIndex
-      ) {
-        manager.activeItem._selectViaInteraction();
+      if (this._multiple) {
+        if (
+          isArrowKey &&
+          event.shiftKey &&
+          manager.activeItem &&
+          manager.activeItemIndex !== previouslyFocusedIndex
+        ) {
+          manager.activeItem._selectViaInteraction();
+        }
       }
     }
+  }
+
+  private _buttonsHasFocus(): boolean {
+    const buttonList = [...(this.panel?.nativeElement?.querySelectorAll('button') as any)];
+    return buttonList.some(b => document.activeElement === b);
   }
 
   /** Handles keyboard events coming from the overlay. */
@@ -1169,21 +1254,6 @@ export class MatSelect
       .withAllowedModifierKeys(['shiftKey'])
       .skipPredicate(this._skipPredicate);
 
-    this._keyManager.tabOut.subscribe(() => {
-      if (this.panelOpen) {
-        // Select the active item when tabbing away. This is consistent with how the native
-        // select behaves. Note that we only want to do this in single selection mode.
-        if (!this.multiple && this._keyManager.activeItem) {
-          this._keyManager.activeItem._selectViaInteraction();
-        }
-
-        // Restore focus to the trigger before closing. Ensures that the focus
-        // position won't be lost if the user got focus into the overlay.
-        this.focus();
-        this.close();
-      }
-    });
-
     this._keyManager.change.subscribe(() => {
       if (this._panelOpen && this.panel) {
         this._scrollOptionIntoView(this._keyManager.activeItemIndex || 0);
@@ -1191,6 +1261,39 @@ export class MatSelect
         this._keyManager.activeItem._selectViaInteraction();
       }
     });
+  }
+
+  public panelClick(event: MouseEvent) {
+    event.preventDefault();
+  }
+
+  private _ignoreFocusChange = false;
+  /** close the panel when focus is lost */
+  private _initFocusMonitor() {
+    window.setTimeout(() => {
+      // wait until panel finishes opening
+      if (!this.panel) {
+        return;
+      }
+      this.focusOptionsList();
+
+      this._focusMonitor.monitor(this.panel.nativeElement, true).subscribe(origin => {
+        // The panel should be closed when the user focuses anywhere outside of the panel or its trigger.
+        if (origin === null && this.panelOpen) {
+          if (!this._ignoreFocusChange) {
+            // Select the active item when tabbing away. This is consistent with how the native
+            // select behaves. Note that we only want to do this in single selection mode.
+            if (!this.multiple && this._keyManager.activeItem) {
+              this._keyManager.activeItem._selectViaInteraction();
+            }
+
+            this.close();
+          } else {
+            this._ignoreFocusChange = false;
+          }
+        }
+      });
+    }, 100);
   }
 
   /** Drops current option subscriptions and IDs and resets from scratch. */
@@ -1202,7 +1305,6 @@ export class MatSelect
 
       if (event.isUserInput && !this.multiple && this._panelOpen) {
         this.close();
-        this.focus();
       }
     });
 
@@ -1246,10 +1348,10 @@ export class MatSelect
 
         if (isUserInput) {
           // In case the user selected the option with their mouse, we
-          // want to restore focus back to the trigger, in order to
+          // want to restore focus back to the list, in order to
           // prevent the select keyboard controls from clashing with
           // the ones from `mat-option`.
-          this.focus();
+          this.focusOptionsList();
         }
       }
     }
@@ -1324,8 +1426,12 @@ export class MatSelect
   }
 
   /** Focuses the select element. */
-  focus(options?: FocusOptions): void {
+  focusSelect(options?: FocusOptions): void {
     this._elementRef.nativeElement.focus(options);
+  }
+  /** Focuses the select options list. */
+  focusOptionsList(options?: FocusOptions): void {
+    this.panel?.nativeElement.children[0].focus(options);
   }
 
   /** Gets the aria-labelledby for the select panel. */
@@ -1418,7 +1524,7 @@ export class MatSelect
       return;
     }
 
-    this.focus();
+    this.focusOptionsList();
     this.open();
   }
 

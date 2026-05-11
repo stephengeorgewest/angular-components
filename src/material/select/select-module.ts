@@ -11,16 +11,17 @@ import {NgModule} from '@angular/core';
 import {MatOptionModule} from '../core';
 import {MatFormFieldModule} from '../form-field';
 import {CdkScrollableModule} from '@angular/cdk/scrolling';
-import {MatSelect, MatSelectTrigger} from './select';
+import {MatSelect, MatSelectButtons, MatSelectTrigger} from './select';
 import {BidiModule} from '@angular/cdk/bidi';
 
 @NgModule({
-  imports: [OverlayModule, MatOptionModule, MatSelect, MatSelectTrigger],
+  imports: [OverlayModule, MatOptionModule, MatSelect, MatSelectButtons, MatSelectTrigger],
   exports: [
     BidiModule,
     CdkScrollableModule,
     MatFormFieldModule,
     MatSelect,
+    MatSelectButtons,
     MatSelectTrigger,
     MatOptionModule,
   ],

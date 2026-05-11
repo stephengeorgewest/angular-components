@@ -166,6 +166,18 @@ div.mat-mdc-select-panel {
   position: relative;
   background-color: token-utils.slot(select-panel-background-color, $fallbacks);
 
+  display:flex;
+  flex-direction: column;
+
+  .content {
+    overflow-y: auto;
+  }
+
+  .footer {
+    //compensate for padding on content
+    margin-bottom: 8px;
+  }
+
   .mat-mdc-select-panel-above & {
     border-radius: $border-radius $border-radius 0 0;
     transform-origin: bottom center;

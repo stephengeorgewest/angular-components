@@ -924,7 +924,7 @@ describe('MatSelect', () => {
         it('should be able to focus the select trigger', () => {
           document.body.focus(); // ensure that focus isn't on the trigger already
 
-          fixture.componentInstance.select.focus();
+          fixture.componentInstance.select.focusSelect();
 
           expect(document.activeElement)
             .withContext('Expected select element to be focused.')
@@ -940,7 +940,7 @@ describe('MatSelect', () => {
           multiFixture.componentInstance.select.open();
           multiFixture.detectChanges();
 
-          const panel = document.querySelector('.mat-mdc-select-panel')!;
+          const panel = document.querySelector('.mat-mdc-select-panel .content')!;
           expect(panel.getAttribute('aria-multiselectable')).toBe('true');
         });
 
@@ -948,7 +948,7 @@ describe('MatSelect', () => {
           fixture.componentInstance.select.open();
           fixture.detectChanges();
 
-          const panel = document.querySelector('.mat-mdc-select-panel')!;
+          const panel = document.querySelector('.mat-mdc-select-panel .content')!;
           expect(panel.getAttribute('aria-multiselectable')).toBe('false');
         });
 
@@ -1048,7 +1048,7 @@ describe('MatSelect', () => {
           fixture.componentInstance.select.open();
           fixture.detectChanges();
 
-          const panel = document.querySelector('.mat-mdc-select-panel')!;
+          const panel = document.querySelector('.mat-mdc-select-panel .content')!;
           expect(panel.getAttribute('role')).toBe('listbox');
         });
 
@@ -2331,7 +2331,9 @@ describe('MatSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        expect(getOverlayHost(fixture)?.querySelector('.mat-mdc-select-panel')?.textContent)
+        expect(
+          getOverlayHost(fixture)?.querySelector('.mat-mdc-select-panel .content')?.textContent,
+        )
           .withContext(`Expected select panel to open normally on re-enabled control`)
           .toContain('Steak');
         expect(fixture.componentInstance.select.panelOpen)
@@ -2374,7 +2376,9 @@ describe('MatSelect', () => {
         fixture.detectChanges();
 
         host = fixture.debugElement.query(By.css('mat-select'))!.nativeElement;
-        panel = getOverlayHost(fixture)!.querySelector('.mat-mdc-select-panel')! as HTMLElement;
+        panel = getOverlayHost(fixture)!.querySelector(
+          '.mat-mdc-select-panel .content',
+        )! as HTMLElement;
       });
 
       it('should not scroll to options that are completely in the view', () => {
@@ -2394,8 +2398,10 @@ describe('MatSelect', () => {
           dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
         }
 
-        // <top padding> + <option index * height> - <panel height> = 8 + 16 * 48 - 275 = 501
-        expect(panel.scrollTop).withContext('Expected scroll to be at the 16th option.').toBe(501);
+        // <top padding> + <option index * height> + <extra height> - <panel height> = 8 + 16 * 48 + 24 - 275 = 501 + 24
+        expect(panel.scrollTop)
+          .withContext('Expected scroll to be at the 16th option.')
+          .toBe(501 + 24);
       });
 
       it('should scroll up to the active option', () => {
@@ -2423,16 +2429,18 @@ describe('MatSelect', () => {
 
         host = groupFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
         panel = getOverlayHost(groupFixture)!.querySelector(
-          '.mat-mdc-select-panel',
+          '.mat-mdc-select-panel .content',
         )! as HTMLElement;
 
         for (let i = 0; i < 8; i++) {
           dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
         }
 
-        // <top padding> + <(option index + group labels) * height> - <panel height> =
-        //    8 + (8 + 3) * 48 - 275 = 309
-        expect(panel.scrollTop).withContext('Expected scroll to be at the 9th option.').toBe(309);
+        // <top padding> + <(option index + group labels) * height> + <extra height> - <panel height> =
+        //    8 + (8 + 3) * 48 + 24 - 275 = 309 + 24
+        expect(panel.scrollTop)
+          .withContext('Expected scroll to be at the 9th option.')
+          .toBe(309 + 24);
       });
 
       it('should scroll to the top when pressing HOME', () => {
@@ -2456,11 +2464,11 @@ describe('MatSelect', () => {
         dispatchKeyboardEvent(host, 'keydown', END);
         fixture.detectChanges();
 
-        // <top padding> + <option amount> * <option height> - <panel height> =
-        //    8 + 30 * 48 - 275 = 1173
+        // <top padding> + <option amount> * <option height> + <extra? height> - <panel height> =
+        //    8 + 30 * 48 + 16 - 275 = 1173
         expect(panel.scrollTop)
           .withContext('Expected panel to be scrolled to the bottom')
-          .toBe(1173);
+          .toBe(1173 + 16);
       });
 
       it('should scroll 10 to the top or to first element when pressing PAGE_UP', () => {
@@ -2495,31 +2503,31 @@ describe('MatSelect', () => {
         dispatchKeyboardEvent(host, 'keydown', PAGE_DOWN);
         fixture.detectChanges();
 
-        // <top padding> + <option amount> * <option height> - <panel height> =
-        //    8 + 11 * 48 - 275 = 261
+        // <top padding> + <option amount> * <option height> + <extra height> - <panel height> =
+        //    8 + 11 * 48 + 24 - 275 = 261
         expect(panel.scrollTop)
           .withContext('Expected panel to be scrolled 10 to the bottom')
-          .toBe(261);
+          .toBe(261 + 24);
         expect(fixture.componentInstance.select._keyManager.activeItemIndex).toBe(10);
 
         dispatchKeyboardEvent(host, 'keydown', PAGE_DOWN);
         fixture.detectChanges();
 
-        // <top padding> + <option amount> * <option height> - <panel height> =
-        //    8 + 21 * 48 - 275 = 741
+        // <top padding> + <option amount> * <option height> + <extra height> - <panel height> =
+        //    8 + 21 * 48 + 24 - 275 = 741 + 24
         expect(panel.scrollTop)
           .withContext('Expected panel to be scrolled 10 to the bottom')
-          .toBe(741);
+          .toBe(741 + 24);
         expect(fixture.componentInstance.select._keyManager.activeItemIndex).toBe(20);
 
         dispatchKeyboardEvent(host, 'keydown', PAGE_DOWN);
         fixture.detectChanges();
 
         // <top padding> + <option amount> * <option height> - <panel height> =
-        //    8 + 30 * 48 - 275 = 1173
+        //    8 + 30 * 48 + 16 - 275 = 1173 + 16
         expect(panel.scrollTop)
           .withContext('Expected panel to be scrolled 10 to the bottom')
-          .toBe(1173);
+          .toBe(1173 + 16);
         expect(fixture.componentInstance.select._keyManager.activeItemIndex).toBe(29);
       });
 
@@ -2531,8 +2539,10 @@ describe('MatSelect', () => {
           await wait(DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL);
         }
 
-        // <top padding> + <option index * height> - <panel height> = 8 + 16 * 48 - 275 = 501
-        expect(panel.scrollTop).withContext('Expected scroll to be at the 16th option.').toBe(501);
+        // <top padding> + <option index * height> + <extra height> - <panel height> = 8 + 16 * 48 - 275 = 501
+        expect(panel.scrollTop)
+          .withContext('Expected scroll to be at the 16th option.')
+          .toBe(501 + 24);
       });
 
       it('should scroll to top when going to first option in top group', () => {
@@ -2544,7 +2554,7 @@ describe('MatSelect', () => {
 
         host = groupFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
         panel = getOverlayHost(groupFixture)!.querySelector(
-          '.mat-mdc-select-panel',
+          '.mat-mdc-select-panel .content',
         )! as HTMLElement;
 
         for (let i = 0; i < 5; i++) {
@@ -2660,7 +2670,7 @@ describe('MatSelect', () => {
       trigger.click();
       fixture.detectChanges();
 
-      expect(getOverlayHost(fixture)?.querySelector('.mat-mdc-select-panel')?.textContent)
+      expect(getOverlayHost(fixture)?.querySelector('.mat-mdc-select-panel .content')?.textContent)
         .withContext(`Expected select panel to open normally on re-enabled control`)
         .toContain('Steak');
       expect(fixture.componentInstance.select.panelOpen)
